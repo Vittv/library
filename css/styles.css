@@ -1,0 +1,259 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+
+    
+    --header-text-color: #615B50;
+    --header-background-color: #EEEBE6;
+
+    --header-button-color: #817A70;
+    --header-button-background-color: #E5E1DA;
+
+
+
+    --border-color: #A6A095;
+
+
+    --main-background-color: #E5E1DA;
+
+
+    --book-title-text-color: #E0DCD5;
+    --book-title-background-color: #41569b;
+
+    --book-author-text-color: #F1EFEC;
+    --book-author-background-color: #9b9b98;
+
+    --book-status-text-color: #4B453A;
+    --book-status-background-color: #f5f1ea;
+
+    --book-textarea-text-color: #4B453A;
+    --book-textarea-background-color: #E5E1DA;
+
+    --book-button-text-color: #4B453A;
+    --book-button-background-color: #E5E1DA;
+
+    /*
+    --header-text-color: #70695F;
+    --header-background-color: #FFFFFF;
+
+    --header-button-color: #817A70;
+    --header-button-background-color: #FFFBF4;
+
+
+    --border-color: #A6A095;
+
+
+    --main-background-color: #FFFBF4;
+
+
+    --book-title-text-color: #FFFFFF;
+    --book-title-background-color: #F18E85;
+
+    --book-author-text-color: #FFFFFF;
+    --book-author-background-color: #FFAEA6;
+
+    --book-status-text-color: #655F54;
+    --book-status-background-color: #FFFBF4;
+
+    --book-textarea-text-color: #655F54;
+    --book-textarea-background-color: #FFFFFF;
+
+    --book-button-text-color: #655F54;
+    --book-button-background-color: #FFFBF4;
+    */
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    background-color: var(--main-background-color);
+}
+
+.header {
+    color: var(--header-text-color);
+    background-color: var(--header-background-color);
+    border-right: 1px solid var(--border-color);
+    padding: 2rem;
+    height: 100%;
+}
+
+.header-title {
+    font-weight: 300;
+    font-size: clamp(calc(1rem + 0.5vw), calc(2rem + 0.5vw), calc(3rem + 0.5vw));
+    padding-bottom: 1rem;
+}
+
+.header-btn {
+    margin-top: 1rem;
+    width: 100%;
+    height: 3rem;
+    color: var(--header-button-color);
+    background-color: var(--header-button-background-color);
+    border: 1px solid var(--border-color);
+    transition: 0.2s ease;
+}
+
+.header-btn:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.new-book {
+    color: var(--book-title-background-color);
+}
+
+.clear-all {
+    color: rgb(235, 72, 123);
+}
+
+.buttons {
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.header-btn {
+    font-size: 1rem;
+}
+
+.booklist {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow: auto;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--main-background-color);
+}
+
+.book {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    width: 23rem;
+    height: 25rem;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    overflow: auto;
+    transition: 0.2s ease;
+}
+
+.book:hover {
+    transform: scale(1.02);
+}
+
+.book-placeholder {
+    margin: 1rem;
+    width: 23rem;
+    height: 25rem;
+    background-color: var(--header-background-color);
+}
+
+.book-title {
+    padding: 0.5rem;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--book-title-text-color);
+    background-color: var(--book-title-background-color);
+}
+
+.book-author {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    color: var(--book-author-text-color);
+    background-color: var(--book-author-background-color);
+}
+
+.book-status {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.book-pages,
+.book-status {
+    font-size: 1rem;
+    padding: 0.5rem;
+    color: var(--book-status-text-color);
+    background-color: var(--book-status-background-color);
+}
+
+.book textarea {
+    font-size: 1rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    padding: 0.5rem;
+    border: none;
+    flex-grow: 1;
+    resize: none;
+    margin-top: auto;
+    color: var(--book-textarea-text-color);
+    background-color: #fff;
+}
+
+.book button {
+    color: var(--book-button-text-color);
+    background-color: var(--book-button-background-color);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: 1px solid var(--border-color);
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.button-container button {
+    flex: 1;
+    padding: 0.5rem;
+}
+
+.button-container button:hover {
+    cursor: pointer;
+}
+
+.button-container button:nth-child(2) {
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+@media (max-width: 560px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-title {
+        border-right: 1px solid var(--border-color);
+        padding-right: 1.3rem;
+    }
+
+    .buttons {
+        display: flex;
+        border: none;
+        gap: 1rem;
+        width: 10rem;
+    }
+
+    .header-btn {
+        font-size: 0.8rem;
+    }
+
+    .book {
+        height: 22rem;
+    }
+}
