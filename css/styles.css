@@ -22,7 +22,7 @@
     --book-title-background-color: #41569b;
 
     --book-author-text-color: #F1EFEC;
-    --book-author-background-color: #9b9b98;
+    --book-author-background-color: #868689;
 
     --book-status-text-color: #4B453A;
     --book-status-background-color: #f5f1ea;
@@ -173,6 +173,7 @@ body {
 
 .book-status {
     border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
 }
 
 .book-pages,
@@ -213,6 +214,7 @@ body {
     flex: 1;
     padding: 0.5rem;
     background-color: var(--book-status-background-color);
+    font-size: 1rem;
 }
 
 .button-container button:hover {
