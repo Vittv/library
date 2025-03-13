@@ -212,6 +212,7 @@ body {
 .button-container button {
     flex: 1;
     padding: 0.5rem;
+    background-color: var(--book-status-background-color);
 }
 
 .button-container button:hover {
