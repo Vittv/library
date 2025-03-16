@@ -16,6 +16,41 @@
             </div>
         </div>
         <div class="main-content">
+            <div class="modal-overlay">
+                <div class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Add New Book</h2>
+                            <span class="close-btn">&times;</span>
+                        </div>
+                        <form id="book-form">
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" required>
+                
+                            <label for="author">Author:</label>
+                            <input type="text" id="author" required>
+                
+                            <label for="pages">Total Pages:</label>
+                            <input type="number" id="pages" required>
+                
+                            <label for="currentPage">Current Page:</label>
+                            <input type="number" id="currentPage">
+                
+                            <label for="status">Status:</label>
+                            <select id="status">
+                                <option value="Reading">Reading</option>
+                                <option value="Finished">Finished</option>
+                            </select>
+                
+                            <label for="notes">Notes:</label>
+                            <textarea id="notes" placeholder="This book is great!"></textarea>
+                
+                            <button class="submit-btn" type="submit">Add Book</button>
+                        </form>
+                    </div>
+                </div>
+            </div>           
+        </div>
             <div class="booklist">
             </div>
         </div>
