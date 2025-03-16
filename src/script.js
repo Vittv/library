@@ -232,7 +232,7 @@ function displayBooks() {
         }
         bookListContainer.appendChild(bookDiv);
     });
-
+    /*
     const totalBooks = myLibrary.length;
     const booksPerRow = 4;
     const minSlots = 8;
@@ -255,6 +255,7 @@ function displayBooks() {
             bookListContainer.appendChild(placeholder);
         }
     }
+    */
 }
 
 const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
