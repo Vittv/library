@@ -258,7 +258,8 @@ function displayBooks() {
 
             // Textarea
             const notesElement = document.createElement("textarea");
-            notesElement.placeholder = "Edit to add notes"
+            notesElement.id = crypto.randomUUID();
+            notesElement.placeholder = "Edit to add notes";
             notesElement.value = book.textArea; // If there's already a note, display it
             notesElement.readOnly = true;
 
