@@ -12,7 +12,42 @@ function Book(title, author, currentPage = 0, pages, status = "Reading", textAre
 
 function addBookToLibrary(book) {
     myLibrary.push(book);
+    saveToLocalStorage();
 }
+
+// Local Storage
+function saveToLocalStorage() {
+    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
+}
+
+function loadLibraryFromStorage() {
+    const storedLibrary = localStorage.getItem("library");
+    if (storedLibrary) {
+        myLibrary = JSON.parse(storedLibrary);
+    } else {
+        // If no saved books, initialize with defaults
+        myLibrary = [];
+        const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
+        `This book is great!
+        My favorite part was when..
+        
+        I also thought the characters..
+        
+        Highly recommend it`);
+        const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", `Still working through this one..`);
+
+        myLibrary.push(book1, book2);
+        saveLibraryToStorage();
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const storedLibrary = localStorage.getItem("myLibrary");
+    if (storedLibrary) {
+        myLibrary.push(...JSON.parse(storedLibrary));
+    }
+    displayBooks();
+});
 
 // Most buttons
 document.addEventListener("DOMContentLoaded", () => {
@@ -91,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             addBookToLibrary(newBook);
         }
     
+        saveToLocalStorage();
         displayBooks(); // Re-render the list of books
         bookForm.reset(); // Clear the form
     }
@@ -196,6 +232,7 @@ function displayBooks() {
             deleteButton.addEventListener("click", () => {
                 const bookId = book.id;
                 myLibrary.splice(myLibrary.findIndex(b => b.id === bookId), 1);
+                saveToLocalStorage();
                 displayBooks();
             })
 
@@ -210,6 +247,7 @@ function displayBooks() {
                     book.status = "Finished";
                     finishedButton.textContent = "Reading";
                 }
+                saveToLocalStorage();
                 displayBooks();
             })
 
@@ -233,6 +271,7 @@ function displayBooks() {
         bookListContainer.appendChild(bookDiv);
     });
     /*
+    // Placeholder code, neat idea, but ended up being more trouble than it's worth
     const totalBooks = myLibrary.length;
     const booksPerRow = 4;
     const minSlots = 8;
@@ -258,16 +297,4 @@ function displayBooks() {
     */
 }
 
-const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
-`This book is great!
-My favorite part was when..
-
-I also thought the characters..
-
-Highly recommend it`);
-const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "Martin Fowler", 200, 431, "Reading", `Still working through this one..`);
-
-
-addBookToLibrary(book1);
-addBookToLibrary(book2);
 displayBooks();

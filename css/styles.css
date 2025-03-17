@@ -81,10 +81,26 @@ body {
     padding: 2rem;
 }
 
+.header-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.github-icon {
+    font-size: 1.4rem;
+    color: var(--book-title-background-color);
+    transition: 0.2s ease;
+}
+
+.github-icon:hover {
+    color: var(--book-author-background-color);
+}
+
 .header-title {
     font-weight: 300;
     font-size: clamp(calc(1rem + 0.5vw), calc(2rem + 0.5vw), calc(3rem + 0.5vw));
-    padding-bottom: 1rem;
 }
 
 .header-btn {
@@ -111,6 +127,7 @@ body {
 }
 
 .buttons {
+    margin-top: 1rem;
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 1rem;
@@ -343,7 +360,7 @@ input {
 
     .header-title {
         border-right: 1px solid var(--border-color);
-        padding-right: 1.3rem;
+        padding-right: 0.6rem;
     }
 
     .buttons {
@@ -351,6 +368,7 @@ input {
         border: none;
         gap: 1rem;
         width: 10rem;
+        margin-top: 0;
     }
 
     .header-btn {
