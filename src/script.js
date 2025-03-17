@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentPage = document.getElementById("currentPage").value || 0;
         const status = document.getElementById("status").value;
         const notes = document.getElementById("notes").value;
-    
+
         if (editBook) {
             // If editing an existing book
             editBook.title = title;
@@ -134,6 +134,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let editBook = null;
 
+document.addEventListener("DOMContentLoaded", function () {
+    const currentPageInput = document.getElementById("currentPage");
+    const pagesInput = document.getElementById("pages");
+
+        // When the user changes the total pages (pages input), update the max value for currentPage
+        pagesInput.addEventListener("input", function(event) {
+            const totalPages = parseInt(event.target.value);
+    
+            // Update max of currentPage input dynamically
+            if (!isNaN(totalPages) && totalPages > 0) {
+                currentPageInput.setAttribute("max", totalPages);
+    
+                if (parseInt(currentPageInput.value) > totalPages) {
+                    currentPageInput.value = totalPages;
+                }
+            } else {
+                // If pages input is invalid, reset max
+                currentPageInput.removeAttribute("max");
+            }
+        });
+    
+        // Prevent the user from typing a number of current pages bigger than total pages
+        currentPageInput.addEventListener("input", function(event) {
+            const maxPages = parseInt(currentPageInput.getAttribute("max"));
+            const currentValue = parseInt(currentPageInput.value);
+    
+            // If the entered value is greater than the max, reset to max
+            if (!isNaN(currentValue) && currentValue > maxPages) {
+                currentPageInput.value = maxPages;
+            }
+        });
+})
+
 function openEditModal(book) {
     const modalOverlay = document.querySelector(".modal-overlay");
     const modalTitle = document.querySelector(".modal-title");
@@ -153,34 +186,6 @@ function openEditModal(book) {
     const currentPageInput = document.getElementById("currentPage");
     const pagesInput = document.getElementById("pages");
     currentPageInput.setAttribute("max", pagesInput.value);
-
-    // When the user changes the total pages (pages input), update the max value for currentPage
-    pagesInput.addEventListener("input", function(event) {
-        const totalPages = parseInt(event.target.value);
-
-        // Update max of currentPage input dynamically
-        if (!isNaN(totalPages) && totalPages > 0) {
-            currentPageInput.setAttribute("max", totalPages);
-
-            if (parseInt(currentPageInput.value) > totalPages) {
-                currentPageInput.value = totalPages;
-            }
-        } else {
-            // If pages input is invalid, reset max
-            currentPageInput.removeAttribute("max");
-        }
-    });
-
-    // Prevent the user from typing a number of current pages bigger than total pages
-    currentPageInput.addEventListener("input", function(event) {
-        const maxPages = parseInt(currentPageInput.getAttribute("max"));
-        const currentValue = parseInt(currentPageInput.value);
-
-        // If the entered value is greater than the max, reset to max
-        if (!isNaN(currentValue) && currentValue > maxPages) {
-            currentPageInput.value = maxPages;
-        }
-    });
 
     editBook = book;
 
