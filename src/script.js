@@ -1,5 +1,6 @@
 const myLibrary = [];
 
+// Book constructor
 function Book(title, author, currentPage = 0, pages, status = "Reading", textArea = "") {
     this.id = crypto.randomUUID();
     this.title = title;
@@ -10,42 +11,41 @@ function Book(title, author, currentPage = 0, pages, status = "Reading", textAre
     this.textArea = textArea;
 }
 
+// Add book to library and save to localStorage
 function addBookToLibrary(book) {
     myLibrary.push(book);
     saveToLocalStorage();
 }
 
-// Local Storage
+// Save to localStorage
 function saveToLocalStorage() {
     localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
 }
 
+// Load from localStorage and initialize default books if necessary
 function loadLibraryFromStorage() {
-    const storedLibrary = localStorage.getItem("library");
-    if (storedLibrary) {
-        myLibrary = JSON.parse(storedLibrary);
-    } else {
-        // If no saved books, initialize with defaults
-        myLibrary = [];
-        const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
-        `This book is great!
-        My favorite part was when..
-        
-        I also thought the characters..
-        
-        Highly recommend it`);
-        const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", `Still working through this one..`);
-
-        myLibrary.push(book1, book2);
-        saveLibraryToStorage();
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
     const storedLibrary = localStorage.getItem("myLibrary");
     if (storedLibrary) {
         myLibrary.push(...JSON.parse(storedLibrary));
+    } else {
+        // If no saved books, initialize with defaults
+        const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
+            `This book is great!
+            My favorite part was when..
+            
+            I also thought the characters..
+            
+            Highly recommend it`);
+        const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", `Still working through this one..`);
+
+        myLibrary.push(book1, book2);
+        saveToLocalStorage();
     }
+}
+
+// Load library when page loads
+document.addEventListener("DOMContentLoaded", () => {
+    loadLibraryFromStorage();
     displayBooks();
 });
 
@@ -81,13 +81,14 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (event.key === "Enter") {
             saveBook();
         }
-    })
+    });
 
     // Clear all
     clearAllButton.addEventListener("click", () => {
         const confirmation = confirm("Are you sure you want to clear all books?");
         if (confirmation) {
             myLibrary.length = 0;
+            localStorage.removeItem("myLibrary");
             displayBooks();
         }
     });
@@ -138,33 +139,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentPageInput = document.getElementById("currentPage");
     const pagesInput = document.getElementById("pages");
 
-        // When the user changes the total pages (pages input), update the max value for currentPage
-        pagesInput.addEventListener("input", function(event) {
-            const totalPages = parseInt(event.target.value);
+    // When the user changes the total pages (pages input), update the max value for currentPage
+    pagesInput.addEventListener("input", function(event) {
+        const totalPages = parseInt(event.target.value);
     
-            // Update max of currentPage input dynamically
-            if (!isNaN(totalPages) && totalPages > 0) {
-                currentPageInput.setAttribute("max", totalPages);
+        // Update max of currentPage input dynamically
+        if (!isNaN(totalPages) && totalPages > 0) {
+            currentPageInput.setAttribute("max", totalPages);
     
-                if (parseInt(currentPageInput.value) > totalPages) {
-                    currentPageInput.value = totalPages;
-                }
-            } else {
-                // If pages input is invalid, reset max
-                currentPageInput.removeAttribute("max");
+            if (parseInt(currentPageInput.value) > totalPages) {
+                currentPageInput.value = totalPages;
             }
-        });
+        } else {
+            // If pages input is invalid, reset max
+            currentPageInput.removeAttribute("max");
+        }
+    });
     
-        // Prevent the user from typing a number of current pages bigger than total pages
-        currentPageInput.addEventListener("input", function(event) {
-            const maxPages = parseInt(currentPageInput.getAttribute("max"));
-            const currentValue = parseInt(currentPageInput.value);
+    // Prevent the user from typing a number of current pages bigger than total pages
+    currentPageInput.addEventListener("input", function(event) {
+        const maxPages = parseInt(currentPageInput.getAttribute("max"));
+        const currentValue = parseInt(currentPageInput.value);
     
-            // If the entered value is greater than the max, reset to max
-            if (!isNaN(currentValue) && currentValue > maxPages) {
-                currentPageInput.value = maxPages;
-            }
-        });
+        // If the entered value is greater than the max, reset to max
+        if (!isNaN(currentValue) && currentValue > maxPages) {
+            currentPageInput.value = maxPages;
+        }
+    });
 })
 
 function openEditModal(book) {
@@ -193,6 +194,7 @@ function openEditModal(book) {
     document.body.classList.add("modal-open");
 }
 
+// Display the books
 function displayBooks() {
     const bookListContainer = document.querySelector(".booklist");
     bookListContainer.innerHTML = "";
@@ -276,31 +278,4 @@ function displayBooks() {
         }
         bookListContainer.appendChild(bookDiv);
     });
-    /*
-    // Placeholder code, neat idea, but ended up being more trouble than it's worth
-    const totalBooks = myLibrary.length;
-    const booksPerRow = 4;
-    const minSlots = 8;
-
-    const requiredSlots = totalBooks < minSlots ? minSlots : totalBooks;
-
-    const remainder = requiredSlots % booksPerRow;
-    const placeholdersNeeded = remainder === 0 ? 0 : booksPerRow - remainder;
-
-    for (let i = totalBooks; i < requiredSlots; i++) {
-        const placeholder = document.createElement("div");
-        placeholder.classList.add("book-placeholder");
-        bookListContainer.appendChild(placeholder);
-    }
-
-    if (totalBooks > minSlots) {
-        for (let i = 0; i < placeholdersNeeded; i++) {
-            const placeholder = document.createElement("div");
-            placeholder.classList.add("book-placeholder");
-            bookListContainer.appendChild(placeholder);
-        }
-    }
-    */
 }
-
-displayBooks();
