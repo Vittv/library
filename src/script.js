@@ -30,12 +30,12 @@ function loadLibraryFromStorage() {
     } else {
         // If no saved books, initialize with defaults
         const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
-            `This book is great!
-            My favorite part was when..
-            
-            I also thought the characters..
-            
-            Highly recommend it`);
+`This book is great!
+My favorite part was when..
+
+I also thought the characters..
+
+Highly recommend it`);
         const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", `Still working through this one..`);
 
         myLibrary.push(book1, book2);
