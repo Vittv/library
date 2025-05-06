@@ -1,281 +1,229 @@
-const myLibrary = [];
-
-// Book constructor
-function Book(title, author, currentPage = 0, pages, status = "Reading", textArea = "") {
-    this.id = crypto.randomUUID();
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.currentPage = currentPage;
-    this.status = status;
-    this.textArea = textArea;
+class Book {
+    constructor(title, author, currentPage = 0, pages, status = "Reading", textArea = "") {
+        this.id = crypto.randomUUID();
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.currentPage = currentPage;
+        this.status = status;
+        this.textArea = textArea;
+    }
 }
 
-// Add book to library and save to localStorage
-function addBookToLibrary(book) {
-    myLibrary.push(book);
-    saveToLocalStorage();
-}
+class Library {
+    constructor() {
+        this.books = [];
+        this.load();
+    }
 
-// Save to localStorage
-function saveToLocalStorage() {
-    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
-}
+    add(book) {
+        this.books.push(book);
+        this.save();
+    }
 
-// Load from localStorage and initialize default books if necessary
-function loadLibraryFromStorage() {
-    const storedLibrary = localStorage.getItem("myLibrary");
-    if (storedLibrary) {
-        myLibrary.push(...JSON.parse(storedLibrary));
-    } else {
-        // If no saved books, initialize with defaults
-        const book1 = new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
+    remove(bookId) {
+        this.books = this.books.filter(book => book.id !== bookId);
+        this.save();
+    }
+
+    save() {
+        localStorage.setItem("myLibrary", JSON.stringify(this.books));
+    }
+
+    load() {
+        const stored = localStorage.getItem("myLibrary");
+        if (stored) {
+            this.books = JSON.parse(stored).map(book => Object.assign(new Book(), book));
+        } else {
+            this.add(new Book("Alice in Wonderland", "Lewis Carroll", 200, 200, "Finished", 
 `This book is great!
 My favorite part was when..
 
 I also thought the characters..
 
-Highly recommend it`);
-        const book2 = new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", `Still working through this one..`);
+Highly recommend it`));
+            this.add(new Book("Harry Potter and the Sorcerer’s Stone", "J.K. Rowling", 200, 431, "Reading", "Still working through this one.."));
+        }
+    }
 
-        myLibrary.push(book1, book2);
-        saveToLocalStorage();
+    getAll() {
+        return this.books;
     }
 }
 
-// Load library when page loads
-document.addEventListener("DOMContentLoaded", () => {
-    loadLibraryFromStorage();
-    displayBooks();
-});
+class BookUI {
+    constructor(library) {
+        this.library = library;
+        this.editBook = null;
+        this.modalOverlay = document.querySelector(".modal-overlay");
+        this.bookForm = document.getElementById("book-form");
 
-// Most buttons
-document.addEventListener("DOMContentLoaded", () => {
-    const modalOverlay = document.querySelector(".modal-overlay");
-    const newBookButton = document.querySelector(".new-book");
-    const clearAllButton = document.querySelector(".clear-all");
+        this.bindEvents();
+        this.displayBooks();
+    }
 
-    const closeButton = document.querySelector(".close-btn");
-    const bookForm = document.getElementById("book-form");
+    bindEvents() {
+        document.querySelector(".new-book").addEventListener("click", () => this.openAddModal());
+        document.querySelector(".clear-all").addEventListener("click", () => this.clearAll());
+        document.querySelector(".close-btn").addEventListener("click", () => this.closeModal());
+        document.addEventListener("keydown", (e) => this.handleKeydown(e));
+        this.bookForm.addEventListener("submit", (e) => this.saveBook(e));
 
-    // Show modal
-    newBookButton.addEventListener("click", () => {
-        modalOverlay.classList.add("show");
-        document.body.classList.add("modal-open");
+        const currentPageInput = document.getElementById("currentPage");
+        const pagesInput = document.getElementById("pages");
+
+        pagesInput.addEventListener("input", function(event) {
+            const totalPages = parseInt(event.target.value);
+            if (!isNaN(totalPages) && totalPages > 0) {
+                currentPageInput.setAttribute("max", totalPages);
+                if (parseInt(currentPageInput.value) > totalPages) {
+                    currentPageInput.value = totalPages;
+                }
+            } else {
+                currentPageInput.removeAttribute("max");
+            }
+        });
+
+        currentPageInput.addEventListener("input", function() {
+            const maxPages = parseInt(currentPageInput.getAttribute("max"));
+            const currentValue = parseInt(currentPageInput.value);
+            if (!isNaN(currentValue) && currentValue > maxPages) {
+                currentPageInput.value = maxPages;
+            }
+        });
+    }
+
+    handleKeydown(event) {
+        if (event.key === "Escape") this.closeModal();
+        else if (event.key === "Enter") this.bookForm.requestSubmit();
+    }
+
+    openAddModal() {
+        this.bookForm.reset();
         document.querySelector(".modal-title").textContent = "Add New Book";
+        this.editBook = null;
+        this.openModal();
+    }
 
-        bookForm.reset();
+    openEditModal(book) {
+        const { title, author, pages, currentPage, status, textArea } = book;
+        this.bookForm.title.value = title;
+        this.bookForm.author.value = author;
+        this.bookForm.pages.value = pages;
+        this.bookForm.currentPage.value = currentPage;
+        this.bookForm.status.value = status;
+        this.bookForm.notes.value = textArea;
+        this.editBook = book;
+        document.querySelector(".modal-title").textContent = "Edit Book";
+        this.openModal();
+    }
 
-        editBook = null;
-    });
+    openModal() {
+        this.modalOverlay.classList.add("show");
+        document.body.classList.add("modal-open");
+    }
 
-    // Close modal
-    closeButton.addEventListener("click", () => {
-        closeModal();
-    });
-
-    // Enter and Escape events
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeModal();
-        } else if (event.key === "Enter") {
-            saveBook();
-        }
-    });
-
-    // Clear all
-    clearAllButton.addEventListener("click", () => {
-        const confirmation = confirm("Are you sure you want to clear all books?");
-        if (confirmation) {
-            myLibrary.length = 0;
-            localStorage.removeItem("myLibrary");
-            displayBooks();
-        }
-    });
-
-    function closeModal() {
-        modalOverlay.classList.remove("show");
+    closeModal() {
+        this.modalOverlay.classList.remove("show");
         document.body.classList.remove("modal-open");
     }
 
-    // Handle form submission
-    bookForm.addEventListener("submit", saveBook);
-    function saveBook(event) {
-        event.preventDefault();
-        closeModal();
-    
-        const title = document.getElementById("title").value;
-        const author = document.getElementById("author").value;
-        const pages = document.getElementById("pages").value;
-        const currentPage = document.getElementById("currentPage").value || 0;
-        const status = document.getElementById("status").value;
-        const notes = document.getElementById("notes").value;
-
-        if (editBook) {
-            // If editing an existing book
-            editBook.title = title;
-            editBook.author = author;
-            editBook.pages = pages;
-            editBook.currentPage = currentPage;
-            editBook.status = status;
-            editBook.textArea = notes;
-    
-            editBook = null; // Reset after saving
-        } else {
-            // If adding a new book
-            const newBook = new Book(title, author, currentPage, pages, status, notes);
-            addBookToLibrary(newBook);
+    clearAll() {
+        const confirmation = confirm("Are you sure you want to clear all books?");
+        if (confirmation) {
+            this.library.books = [];
+            localStorage.removeItem("myLibrary");
+            this.displayBooks();
         }
-    
-        saveToLocalStorage();
-        displayBooks(); // Re-render the list of books
-        bookForm.reset(); // Clear the form
     }
-});
 
-let editBook = null;
+    saveBook(event) {
+        event.preventDefault();
+        const { title, author, pages, currentPage, status, notes } = this.bookForm;
 
-document.addEventListener("DOMContentLoaded", function () {
-    const currentPageInput = document.getElementById("currentPage");
-    const pagesInput = document.getElementById("pages");
-
-    // When the user changes the total pages (pages input), update the max value for currentPage
-    pagesInput.addEventListener("input", function(event) {
-        const totalPages = parseInt(event.target.value);
-    
-        // Update max of currentPage input dynamically
-        if (!isNaN(totalPages) && totalPages > 0) {
-            currentPageInput.setAttribute("max", totalPages);
-    
-            if (parseInt(currentPageInput.value) > totalPages) {
-                currentPageInput.value = totalPages;
-            }
+        if (this.editBook) {
+            Object.assign(this.editBook, {
+                title: title.value,
+                author: author.value,
+                pages: pages.value,
+                currentPage: currentPage.value || 0,
+                status: status.value,
+                textArea: notes.value
+            });
         } else {
-            // If pages input is invalid, reset max
-            currentPageInput.removeAttribute("max");
+            const newBook = new Book(title.value, author.value, currentPage.value || 0, pages.value, status.value, notes.value);
+            this.library.add(newBook);
         }
-    });
-    
-    // Prevent the user from typing a number of current pages bigger than total pages
-    currentPageInput.addEventListener("input", function(event) {
-        const maxPages = parseInt(currentPageInput.getAttribute("max"));
-        const currentValue = parseInt(currentPageInput.value);
-    
-        // If the entered value is greater than the max, reset to max
-        if (!isNaN(currentValue) && currentValue > maxPages) {
-            currentPageInput.value = maxPages;
-        }
-    });
-})
 
-function openEditModal(book) {
-    const modalOverlay = document.querySelector(".modal-overlay");
-    const modalTitle = document.querySelector(".modal-title");
-    const modalButton = document.querySelector(".submit-btn");
+        this.library.save();
+        this.displayBooks();
+        this.bookForm.reset();
+        this.closeModal();
+        this.editBook = null;
+    }
 
-    modalTitle.textContent = "Edit Book";
-    modalButton.textContent = "Save";
+    displayBooks() {
+        const container = document.querySelector(".booklist");
+        container.innerHTML = "";
 
-    document.getElementById("title").value = book.title;
-    document.getElementById("author").value = book.author;
-    document.getElementById("pages").value = book.pages;
-    document.getElementById("currentPage").value = book.currentPage;
-    document.getElementById("status").value = book.status;
-    document.getElementById("notes").value = book.textArea;
+        this.library.getAll().forEach(book => {
+            const div = document.createElement("div");
+            div.classList.add("book");
+            div.dataset.id = book.id;
 
-    // Set the max of currentPage based on total pages when the page input changes
-    const currentPageInput = document.getElementById("currentPage");
-    const pagesInput = document.getElementById("pages");
-    currentPageInput.setAttribute("max", pagesInput.value);
+            const title = this.createElement("h3", "book-title", book.title);
+            title.title = book.title;
+            const author = this.createElement("p", "book-author", book.author);
+            const pages = this.createElement("p", "book-pages", `${book.currentPage} / ${book.pages} pg`);
+            const status = this.createElement("p", "book-status", book.status);
+            const notes = document.createElement("textarea");
+            notes.placeholder = "Edit to add notes";
+            notes.value = book.textArea;
+            notes.readOnly = true;
 
-    editBook = book;
+            const buttons = this.createButtons(book);
+            div.append(title, author, pages, status, notes, buttons);
+            container.appendChild(div);
+        });
+    }
 
-    modalOverlay.classList.add("show");
-    document.body.classList.add("modal-open");
+    createElement(tag, className, text) {
+        const el = document.createElement(tag);
+        el.className = className;
+        el.textContent = text;
+        return el;
+    }
+
+    createButtons(book) {
+        const container = document.createElement("div");
+        container.classList.add("button-container");
+
+        const edit = document.createElement("button");
+        edit.textContent = "Edit";
+        edit.addEventListener("click", () => this.openEditModal(book));
+
+        const remove = document.createElement("button");
+        remove.textContent = "Delete";
+        remove.addEventListener("click", () => {
+            this.library.remove(book.id);
+            this.displayBooks();
+        });
+
+        const toggle = document.createElement("button");
+        toggle.textContent = book.status === "Finished" ? "Reading" : "Finished";
+        toggle.addEventListener("click", () => {
+            book.status = book.status === "Finished" ? "Reading" : "Finished";
+            this.library.save();
+            this.displayBooks();
+        });
+
+        container.append(edit, remove, toggle);
+        return container;
+    }
 }
 
-// Display the books
-function displayBooks() {
-    const bookListContainer = document.querySelector(".booklist");
-    bookListContainer.innerHTML = "";
-
-    myLibrary.forEach((book) => {
-        const bookDiv = document.createElement("div");
-        bookDiv.classList.add("book");
-        bookDiv.dataset.id = book.id;
-
-        if (book.title || book.author || book.pages || book.status) {
-
-            const titleElement = document.createElement("h3");
-            titleElement.classList.add("book-title")
-            titleElement.textContent = book.title;
-            titleElement.setAttribute("title", book.title);
-
-            const authorElement = document.createElement("p");
-            authorElement.classList.add("book-author");
-            authorElement.textContent = `${book.author}`;
-
-            const pagesElement = document.createElement("p");
-            pagesElement.classList.add("book-pages");
-            pagesElement.textContent = `${book.currentPage} / ${book.pages} pg`;
-
-            const statusElement = document.createElement("p");
-            statusElement.classList.add("book-status")
-            statusElement.textContent = `${book.status}`;
-
-            const textArea = document.createElement("textarea");
-            textArea.classList.add("book-textarea");
-            textArea.textContent = `${book.textArea}`;
-
-            const buttonContainer = document.createElement("div");
-            buttonContainer.classList.add("button-container");
-
-            const editButton = document.createElement("button");
-            editButton.textContent = "Edit";
-            editButton.addEventListener("click", () => openEditModal(book));
-
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Delete";
-            deleteButton.addEventListener("click", () => {
-                const bookId = book.id;
-                myLibrary.splice(myLibrary.findIndex(b => b.id === bookId), 1);
-                saveToLocalStorage();
-                displayBooks();
-            })
-
-            const finishedButton = document.createElement("button");
-            finishedButton.textContent = book.status === "Finished" ? "Reading" : "Finished";
-
-            finishedButton.addEventListener("click", () => {
-                if (book.status === "Finished") {
-                    book.status = "Reading";
-                    finishedButton.textContent = "Finished";
-                } else {
-                    book.status = "Finished";
-                    finishedButton.textContent = "Reading";
-                }
-                saveToLocalStorage();
-                displayBooks();
-            })
-
-            // Textarea
-            const notesElement = document.createElement("textarea");
-            notesElement.id = crypto.randomUUID();
-            notesElement.placeholder = "Edit to add notes";
-            notesElement.value = book.textArea; // If there's already a note, display it
-            notesElement.readOnly = true;
-
-            buttonContainer.appendChild(editButton);
-            buttonContainer.appendChild(deleteButton);
-            buttonContainer.appendChild(finishedButton);
-
-            bookDiv.appendChild(titleElement);
-            bookDiv.appendChild(authorElement);
-            bookDiv.appendChild(pagesElement);
-            bookDiv.appendChild(statusElement);
-            bookDiv.appendChild(notesElement);
-            bookDiv.appendChild(buttonContainer);
-        }
-        bookListContainer.appendChild(bookDiv);
-    });
-}
+// Initialize app
+document.addEventListener("DOMContentLoaded", () => {
+    const myLibrary = new Library();
+    new BookUI(myLibrary);
+});
